@@ -20,6 +20,7 @@ const rtheaders = require('./json/rtheaders.json');
 const rtbody = require('./json/rtbody.json');
 const sessbody = require('./json/sessbody.json');
 const dclbody = require('./json/dclbody.json');
+const immbody = require('./json/immbody.json');
 
 // Update our JSON from .env properties
 tdtheaders["x-api-key"] = apikey; 
@@ -28,6 +29,9 @@ rtbody.documentLibraryVersion = doclib;
 dclbody.jobTicket.DocumentLibraryVersion.DocumentLibraryVersion = doclib;
 dclbody.jobTicket.Prefs.LicenseKeyString = licensekey;
 rtbody.documentLibraryVersion = doclib;
+immbody.jobTicket.DocumentLibraryVersion.DocumentLibraryVersion = doclib;
+immbody.jobTicket.Prefs.LicenseKeyString = licensekey;
+// TODO: Move IMM Forwarding Details to .env 
 
 // Configure and Launch the Express Server
 app.use(bodyParser.json({limit: '15mb'})); 
@@ -82,6 +86,11 @@ async function getDocs(receivedData) {
 
   // 5 - CALL DCL AGAIN TO SEND DOCUMENTS TO IMM
   // TODO
+  // immbody.jobTicket.DataValuesList[0].content = fulltxl;
+  // let immResponse = await axios.post(dclurl, immbody, { headers: rtheaders});
+  // let immStatus = forwarding status
+  
 
-  return('<html><p>Status of IMM is: TODO</p><br><object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + '"' + '></object></html>');
+  let backUrl = '<a href="https://cunexus--sbatester.repl.co">Go Back</a>';
+  return('<html><p>Status of IMM is: TODO</p><br>' + backUrl + '<br><br><object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + '"' + '></object></html>');
 }

@@ -18,28 +18,14 @@
   </head>
 
   <body>
-<!-- Uses a header that contracts as the page scrolls down. -->
-<style>
-.demo-layout-waterfall .mdl-layout__header-row .mdl-navigation__link:last-of-type  {
-  padding-right: 0;
-}
-</style>
 
-<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-  <header class="mdl-layout__header">
-    <div class="mdl-layout__header-row">
-      <span class="mdl-layout-title">Integration POC</span>
-      <!--
-      <div class="mdl-layout-spacer"></div>
-      <nav class="mdl-navigation">
-        <span class="mdl-chip">
-          <span class="mdl-chip__text"></span>
-        </span>
-      </nav>
-      -->
-    </div>
-  </header>
-  <main class="mdl-layout__content">
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">Integration POC</span>
+        </div>
+      </header>
+    <main class="mdl-layout__content">
 
     <div align="center">
       <br><br>
@@ -84,7 +70,7 @@
   // JSON Editor
   const container = document.getElementById('jsoneditor')
   const options = {
-    mode: 'tree',
+    mode: 'code',
     modes: ['code', 'tree'], // allowed modes
     onError: function (err) {
       alert(err.toString())
@@ -93,7 +79,7 @@
       console.log('Mode switched from', oldMode, 'to', newMode)
     }
   }
-  let json = { "Campaign": { "Name": "testing new experian file format", "Start": "2017-12-01T00:00:00", "End": "2018-03-01T00:00:00" }, "Customer": { "SSN": "526410667", "UniqueIdentifier": "100273", "FirstName": "Lance", "MiddleName": "Mid", "LastName": "Cooley", "Phone": "333-333-3333", "Email": "", "CreditScore": 604, "CreditBureau": "Experian", "CreditScoreDate": "2018-01-22T12:33:53.81", "CampaignCode": "ILJDYIJADP", "MLA": false, "MLAVerifyDate": "2018-01-22T12:33:53.81", "EnteredName": "Lance Cooley" }, "Offer": { "Group": "Used Auto", "Product": "used autos", "Category": "Used Auto", "Tier": "Tier 2", "DateCreated": "2018-01-22T12:33:53.81", "DateAccepted": "2018-01-24T14:43:05.12", "Channel": "Responsive Widget" }, "Terms": { "Type": "PreApproved", "FundsRequested": 25000, "APR": 4.25, "Limit": 25000, "Term": 60, "MonthlyPer1K": 18.53 }, "Meta": { "CampaignId": "50", "Gap.Accepted": "True", "Gap.Value": "600.00", "Meridian.AnnualIncome": "$1", "Meridian.DateOfBirth": "02/14/1930", "Meridian.Employer": "a", "Meridian.EmploymentStartDate": "01/17/1935", "Meridian.EmploymentStatus": "EM", "Meridian.HousingPayment": "$1", "Meridian.Occupation": "a", "Meridian.PurposeType": "Vehicle" } }
+  let json = { "Campaign": { "Name": "Test Campaign", "Start": "2019-12-01T00:00:00", "End": "2020-03-01T00:00:00" }, "Customer": { "SSN": "526410667", "UniqueIdentifier": "100273", "FirstName": "Lance", "MiddleName": "M", "LastName": "Cooley", "Phone": "333-333-3333", "Email": "lance@gmail.com", "CreditScore": 604, "CreditBureau": "Experian", "CreditScoreDate": "2020-01-22T12:33:53.81", "CampaignCode": "ILJDYIJADP", "MLA": false, "MLAVerifyDate": "2020-01-22T12:33:53.81", "EnteredName": "Lance Cooley" }, "Offer": { "Group": "Used Auto", "Product": "used autos", "Category": "Used Auto", "Tier": "Tier 2", "DateCreated": "2020-01-22T12:33:53.81", "DateAccepted": "2020-01-24T14:43:05.12", "Channel": "Responsive Widget" }, "Terms": { "Type": "PreApproved", "FundsRequested": 25000, "APR": 4.25, "Limit": 25000, "Term": 60, "MonthlyPer1K": 18.53 }, "Meta": { "CampaignId": "50", "Gap.Accepted": "True", "Gap.Value": "600.00", "Meridian.AnnualIncome": "$100000", "Meridian.DateOfBirth": "02/14/1980", "Meridian.Employer": "TestCo", "Meridian.EmploymentStartDate": "01/17/1999", "Meridian.EmploymentStatus": "EM", "Meridian.HousingPayment": "$1000", "Meridian.Occupation": "Tester", "Meridian.PurposeType": "Vehicle" } }
   let editor = new JSONEditor(container, options, json)
 </script>
 

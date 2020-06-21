@@ -1,0 +1,42 @@
+{
+  "jobId": "",
+  "jobTicket": {
+    "CombinedOutput": true,
+    "DocumentLibraryVersion": {
+      "DocumentLibraryVersion": "doclib"
+    },
+    "DataValuesList": [
+      {
+        "ContentType": 2,
+        "Content": "",
+        "Encoding": "base64",
+        "Type": "xml"
+      }
+    ],
+    "DocList": [
+      {
+        "CrossReference": null,
+        "FxlList": [
+          {
+            "ContentType": 5,
+            "Content": "Lending.fxl"
+          }
+        ],
+        "DstFile": {
+          "ContentType": 2,
+          "PdfProperties": {
+            "ContentType": 1
+          }
+        },
+        "NumberOfCopies": 1
+      }
+    ],
+    "Prefs": {
+      "NumberOfCopies": 1,
+      "AutomaticSupplementalDiscovery": true,
+      "LicenseKeyString": "licensekey",
+      "RenderMode": 8
+    }
+  },
+  "action": 6
+}
