@@ -123,7 +123,7 @@ app.post("/tdt", function(req, res) {
   );
 });
 async function tdt(receivedData) {
-  let base64data = Buffer.from(JSON.stringify(receivedData)).toString('base64');
+  let base64data = base64encode(JSON.stringify(receivedData)); 
   tdtbody.partnerData = base64data;
   tdtbody = JSON.stringify(tdtbody);
   let tdtResponse = await axios.post(tdturl, tdtbody, { headers: tdtheaders});
@@ -149,4 +149,23 @@ async function runtime(receivedData) {
   console.log(rtResponse);
   console.log("1 - Received sessionID from Runtime..." + rtResponse.data.session.id);
   return '<a href="' + rtResponse.data.url + '">runtime</a><br><a href="https://cunexus--sbatester.repl.co">back</a>'; 
+}
+
+// Individual Path for DCL
+app.get("/dcl", function(req, res) {
+  res.sendFile('public/dcl.html', { root : __dirname});
+});
+app.post("/dcl", function(req, res) {
+  dcl(req.body.payload).then(
+    function(result) { res.send(result); },
+    function(error) { console.log(error); }
+  );
+});
+async function dcl(receivedData) {
+  dclbody.jobTicket.DataValuesList[0].content = receivedData;
+  let dclResponse = await axios.post(dclurl, dclbody, { headers: rtheaders});
+  let encodedPdf = dclResponse.data.Result.RenderedFiles[0].Content;
+  // console.log("4 - ENCODED PDF = " + encodedPdf);
+
+  return('<html><object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + '"' + '></object></html>');
 }
