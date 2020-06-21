@@ -27,7 +27,7 @@ app.get("/", function(req, res) {
 
 // **** POST ****
 app.post("/getdocs", function(req, res) {
-  console.log('GET DOCUMENTS POST REQUEST HIT');
+  console.log('GET DOCUMENTS POST REQUEST HIT WITH ' + req.body.payload);
   let receivedData = JSON.parse(req.body.payload); 
   getDocs(receivedData).then(
     function(result) { res.send(result); },
@@ -38,32 +38,25 @@ app.post("/getdocs", function(req, res) {
 async function getDocs(receivedData) {
   
   // 1 - CALL TDT 
-  base64data = Buffer.from(JSON.stringify(receivedData)).toString('base64');
+  let base64data = Buffer.from(JSON.stringify(receivedData)).toString('base64');
   tdtbody.partnerData = base64data;
   tdtbody = JSON.stringify(tdtbody);
-  let [tdtResponse] = await Promise.all([
-    axios.post(tdturl, tdtbody, {
-    headers: tdtheaders
-    })
-  ]);
+  let tdtResponse = await axios.post(tdturl, tdtbody, { headers: tdtheaders});
   let buff = Buffer.from(tdtResponse.data.txl, 'base64');
   let txl = buff.toString('ascii');
+
   console.log("1 - Received TXL from TDT... ");  
-  
+ 
   // 2 - CALL RUNTIME PAYMENT CALC
   base64payload = Buffer.from(JSON.stringify(txl)).toString('base64');
   rtbody.transactionData = base64payload;
-  rtbody = JSON.stringify(rtbody);
-  let [rtResponse] = await Promise.all([
-    axios.post(rturl, rtbody, {
-    headers: rtheaders
-    })
-  ]);
+  let rtResponse = await axios.post(rturl, rtbody, { headers: rtheaders});
+  console.log(rtResponse);
   console.log("2 - Received sessionID from Runtime..." + rtResponse.data.session.id);
-  return '<a href="' + rtResponse.data.url + '">runtime</a>';
+  return '<a href="' + rtResponse.data.url + '">runtime</a><br><a href="https://cunexus--sbatester.repl.co">back</a>';
 
-//TODO: Switch to Payment Calculation
-//TODO: Fix subsequent fail
+//TODO: Get PaymentCalculation to not throw 500 error
+//TODO: Get Runtime to actually launch correctly
   
   // 3 - CALL DCL
   
