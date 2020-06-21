@@ -1,0 +1,39 @@
+{
+    "jobId": "",
+    "jobTicket": {
+        "CombinedOutput": true,
+        "DocumentLibraryVersion": {
+            "DocumentLibraryVersion": "2020.130.1"
+        },
+        "DataValuesList": [
+					{
+						"ContentType": 2,
+						"Content": "",
+            "Encoding": "base64",
+						"Type": "xml"
+					}],
+        "DocList": [{
+                "CrossReference": null,
+                "FxlList": [{
+                        "ContentType": 5,
+                        "Content": "Lending.fxl"
+                    }
+                ],
+                "DstFile": {
+                    "ContentType": 2,
+                    "PdfProperties": {
+                        "ContentType": 1
+                    }
+                },
+                "NumberOfCopies": 1
+            }
+        ],
+        "Prefs": {
+            "NumberOfCopies": 1,
+            "AutomaticSupplementalDiscovery": true,
+            "LicenseKeyString": "030qmnHcMieNjHr1vEQbUZtUi4cCg1SVpbAmnwiM3X0bjDbxapbPJYaikFjOn/lo6AhLLlfH2g8+992tRnLZfXW77sIR/TKhMvJgROcWPOaQ+rYhQHL5M9qt+GEa9rW0G0g83+HiwKOZEUKigIwFhKA+mPYZ2o/2Cd+CHctsQ77u8xRrcg86XDxMFtSsVAW/YDMUa3IPOlw8TBbUrFQFv2AyYEs2Nx4BY0IARlRqnUGOS6Y9Y7VwJgafC7Egy4eWdQ7idwaAjiTjBM7q+xzp6jRA==",
+            "RenderMode": 8
+        }
+    },
+    "action": 6
+}
