@@ -4,9 +4,6 @@ const bodyParser = require("body-parser");
 const app = express();
 const { base64encode, base64decode } = require('nodejs-base64');
 
-// TODO
-// * Theme
-
 // Read properties from our environment file (hidden unless REPL owner)
 const apikey = process.env.apikey;
 const tdturl = process.env.tdturl;
@@ -83,5 +80,8 @@ async function getDocs(receivedData) {
   let encodedPdf = dclResponse.data.Result.RenderedFiles[0].Content;
   // console.log("4 - ENCODED PDF = " + encodedPdf);
 
-  return('<html><object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + '"' + '></object></html>');
+  // 5 - CALL DCL AGAIN TO SEND DOCUMENTS TO IMM
+  // TODO
+
+  return('<html><p>Status of IMM is: TODO</p><br><object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + '"' + '></object></html>');
 }
