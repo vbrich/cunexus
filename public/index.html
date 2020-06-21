@@ -1,44 +1,56 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/8.6.6/jsoneditor.min.css" rel="stylesheet" type="text/css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/8.6.6/jsoneditor.min.js"></script>
-</head>
-<body>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/8.6.6/jsoneditor.min.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/8.6.6/jsoneditor.min.js"></script>
+  </head>
 
-<h3>Render Docs</h3>
+  <body>
+    <h3>Render Docs</h3>
 
-<form method="POST">
-  <input type="hidden" id="payload" name="payload"> 
-  <button id="myBtn" formaction="/getdocs">Submit</button>
-</form>
+    <form method="POST">
+      <input type="hidden" id="payload" name="payload"> 
+      <button id="myBtn" formaction="/getdocs" onclick="loadingon()">Submit</button>
+    </form>
 
-<div id="jsoneditor"></div>
+    <div id="jsoneditor"></div>
+    <div id="overlay">
+      <div id="text">Sending Requests...</div>
+    </div>
 
-<script>
-  document.getElementById("myBtn").addEventListener("click", function(){
-    document.getElementById('payload').value = editor.getText();
-  });
+    <script>
+      // Overload
+      function loadingon() {
+        document.getElementById("overlay").style.display = "block";
+      }
+      function loadingoff() {
+        document.getElementById("overlay").style.display = "none";
+      }
+    </script>
 
-  const container = document.getElementById('jsoneditor')
+    <script>
+      // Event listener on button to load payload from the editor
+      document.getElementById("myBtn").addEventListener("click", function(){
+        document.getElementById('payload').value = editor.getText();
+      });
 
-  const options = {
-    mode: 'code',
-    modes: ['code', 'tree'], // allowed modes
-    onError: function (err) {
-      alert(err.toString())
-    },
-    onModeChange: function (newMode, oldMode) {
-      console.log('Mode switched from', oldMode, 'to', newMode)
-    }
-  }
+      // JSON Editor
+      const container = document.getElementById('jsoneditor')
+      const options = {
+        mode: 'tree',
+        modes: ['code', 'tree'], // allowed modes
+        onError: function (err) {
+          alert(err.toString())
+        },
+        onModeChange: function (newMode, oldMode) {
+          console.log('Mode switched from', oldMode, 'to', newMode)
+        }
+      }
+      let json = { "Campaign": { "Name": "testing new experian file format", "Start": "2017-12-01T00:00:00", "End": "2018-03-01T00:00:00" }, "Customer": { "SSN": "526410667", "UniqueIdentifier": "100273", "FirstName": "Lance", "MiddleName": "Mid", "LastName": "Cooley", "Phone": "333-333-3333", "Email": "", "CreditScore": 604, "CreditBureau": "Experian", "CreditScoreDate": "2018-01-22T12:33:53.81", "CampaignCode": "ILJDYIJADP", "MLA": false, "MLAVerifyDate": "2018-01-22T12:33:53.81", "EnteredName": "Lance Cooley" }, "Offer": { "Group": "Used Auto", "Product": "used autos", "Category": "Used Auto", "Tier": "Tier 2", "DateCreated": "2018-01-22T12:33:53.81", "DateAccepted": "2018-01-24T14:43:05.12", "Channel": "Responsive Widget" }, "Terms": { "Type": "PreApproved", "FundsRequested": 25000, "APR": 4.25, "Limit": 25000, "Term": 60, "MonthlyPer1K": 18.53 }, "Meta": { "CampaignId": "50", "Gap.Accepted": "True", "Gap.Value": "600.00", "Meridian.AnnualIncome": "$1", "Meridian.DateOfBirth": "02/14/1930", "Meridian.Employer": "a", "Meridian.EmploymentStartDate": "01/17/1935", "Meridian.EmploymentStatus": "EM", "Meridian.HousingPayment": "$1", "Meridian.Occupation": "a", "Meridian.PurposeType": "Vehicle" } }
+      let editor = new JSONEditor(container, options, json)
+    </script>
 
-  let json = { "Campaign": { "Name": "testing new experian file format", "Start": "2017-12-01T00:00:00", "End": "2018-03-01T00:00:00" }, "Customer": { "SSN": "526410667", "UniqueIdentifier": "100273", "FirstName": "Rich", "MiddleName": "Is", "LastName": "Cooley", "Phone": "333-333-3333", "Email": "", "CreditScore": 604, "CreditBureau": "Experian", "CreditScoreDate": "2018-01-22T12:33:53.81", "CampaignCode": "ILJDYIJADP", "MLA": false, "MLAVerifyDate": "2018-01-22T12:33:53.81", "EnteredName": "Lance Cooley" }, "Offer": { "Group": "Used Auto", "Product": "used autos", "Category": "Used Auto", "Tier": "Tier 2", "DateCreated": "2018-01-22T12:33:53.81", "DateAccepted": "2018-01-24T14:43:05.12", "Channel": "Responsive Widget" }, "Terms": { "Type": "PreApproved", "FundsRequested": 25000, "APR": 4.25, "Limit": 25000, "Term": 60, "MonthlyPer1K": 18.53 }, "Meta": { "CampaignId": "50", "Gap.Accepted": "True", "Gap.Value": "600.00", "Meridian.AnnualIncome": "$1", "Meridian.DateOfBirth": "02/14/1930", "Meridian.Employer": "a", "Meridian.EmploymentStartDate": "01/17/1935", "Meridian.EmploymentStatus": "EM", "Meridian.HousingPayment": "$1", "Meridian.Occupation": "a", "Meridian.PurposeType": "Vehicle" } }
-
-  let editor = new JSONEditor(container, options, json)
-
-</script>
-
-</body>
+  </body>
 </html>
