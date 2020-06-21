@@ -10,6 +10,8 @@ const tdturl = process.env.tdturl;
 const rturl = process.env.rturl;
 const sessurl = process.env.sessurl;
 const dclurl = process.env.dclurl;
+const licensekey = process.env.licensekey;
+const doclib = process.env.doclib;
 
 // Bring in our JSON config files
 const tdtbody = require('./json/tdtbody.json');
@@ -18,7 +20,14 @@ const rtheaders = require('./json/rtheaders.json');
 const rtbody = require('./json/rtbody.json');
 const sessbody = require('./json/sessbody.json');
 const dclbody = require('./json/dclbody.json');
-tdtheaders["x-api-key"] = apikey; // load our apikey from .env
+
+// Update our JSON from .env properties
+tdtheaders["x-api-key"] = apikey; 
+rtbody.client.licenseKey = licensekey;
+rtbody.documentLibraryVersion = doclib;
+dclbody.jobTicket.DocumentLibraryVersion.DocumentLibraryVersion = doclib;
+dclbody.jobTicket.Prefs.LicenseKeyString = licensekey;
+rtbody.documentLibraryVersion = doclib;
 
 // Configure and Launch the Express Server
 app.use(bodyParser.json({limit: '15mb'})); 

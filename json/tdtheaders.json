@@ -1,1 +1,4 @@
-{"Content-Type": "application/json","x-api-key": "apikey"}
+{
+  "Content-Type": "application/json",
+  "x-api-key": "apikey"
+}
