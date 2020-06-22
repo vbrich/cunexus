@@ -44,10 +44,12 @@ app.listen(process.env.PORT || 3000, function() {
 
 // Primary entry point for REPL
 app.get("/", function(req, res) {
+  console.log('A - GET hit...');
   res.sendFile('public/index.html'); // no need to specify dir off root
 });
 
 app.post("/getdocs", function(req, res) {
+  console.log('B - getdocs post hit...');
   let receivedData = JSON.parse(req.body.payload); 
   getDocs(receivedData).then(
     function(result) { res.send(result); },
@@ -56,6 +58,7 @@ app.post("/getdocs", function(req, res) {
 });
 
 async function getDocs(receivedData) {
+  console.log('C - getDocs() hit...');
   // 1 - CALL TDT 
   let base64data = base64encode(JSON.stringify(receivedData)); 
   tdtbody.partnerData = base64data;
