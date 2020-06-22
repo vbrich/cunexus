@@ -62,27 +62,27 @@ async function getDocs(receivedData) {
   let tdtResponse = await axios.post(tdturl, tdtbody, { headers: tdtheaders});
   let buff = Buffer.from(tdtResponse.data.txl, 'base64');
   let txl = buff.toString('ascii');
-  // console.log("1 - TXL = " + txl);
+  console.log("1 - TXL received");
 
   // 2 - CALL RUNTIME PAYMENT CALC
   let base64payload = base64encode(txl); 
   rtbody.transactionData = base64payload;
   let rtResponse = await axios.post(rturl, rtbody, { headers: rtheaders});
   let sessionId = rtResponse.data.session.id;
-  // console.log("2 - SessionId = " + sessionId);
+  console.log("2 - SessionId = " + sessionId);
 
   // 3 - CALL SESSION TO GET FULL TXL
   sessbody.session.id = sessionId;
   let sessResponse = await axios.post(sessurl, sessbody, { headers: rtheaders});
   let fulltxl = sessResponse.data.transactionData;
   // let fulltxldecoded = base64decode(fulltxl);
-  // console.log("3 - FULL TXL = " + fulltxl);
+  console.log("3 - Full Txl received");
 
   // 4 - CALL DCL EXECUTE JOB TICKET
   dclbody.jobTicket.DataValuesList[0].content = fulltxl;
   let dclResponse = await axios.post(dclurl, dclbody, { headers: rtheaders});
   let encodedPdf = dclResponse.data.Result.RenderedFiles[0].Content;
-  // console.log("4 - ENCODED PDF = " + encodedPdf);
+  console.log("4 - Encoded PDF returned");
 
   // 5 - CALL DCL AGAIN TO SEND DOCUMENTS TO IMM
   /*
