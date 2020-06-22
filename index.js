@@ -85,12 +85,16 @@ async function getDocs(receivedData) {
   // console.log("4 - ENCODED PDF = " + encodedPdf);
 
   // 5 - CALL DCL AGAIN TO SEND DOCUMENTS TO IMM
-  // TODO
-  // immbody.jobTicket.DataValuesList[0].content = fulltxl;
-  // let immResponse = await axios.post(dclurl, immbody, { headers: rtheaders});
-  // let immStatus = forwarding status
-  
+  /*
+  immbody.jobTicket.DataValuesList[0].content = fulltxl;
+  let immResponse = await axios.post(dclurl, immbody, { headers: rtheaders});
+  let forwardingResults = JSON.stringify(immResponse.data.Result.ForwardingResults);
+  console.log('Forwarding Results = ' + forwardingResults);
+  //let immStatus = forwarding status
+  */
+
+  let forwardingResults = 'IMM commented off until TDT has signing meta...';
 
   let backUrl = '<a href="https://cunexus--sbatester.repl.co">Go Back</a>';
-  return('<html><p>Status of IMM is: TODO</p><br>' + backUrl + '<br><br><object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + '"' + '></object></html>');
+  return('<html><p>Status of IMM is: ' + forwardingResults + '</p><br>' + backUrl + '<br><br><object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + '"' + '></object></html>');
 }
