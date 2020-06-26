@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const { base64encode, base64decode } = require('nodejs-base64');
 
-// Read properties from our environment file (hidden unless REPL owner)
+// Read our .env properties (hidden unless you are REPL owner)
 const apikey = process.env.apikey;
 const tdturl = process.env.tdturl;
 const rturl = process.env.rturl;
@@ -26,7 +26,7 @@ const dclbody = require('./json/dclbody.json');
 const immbody = require('./json/immbody.json');
 const clearbody = require('./json/clearbody.json');
 
-// Update our JSON from .env properties
+// Update our JSON files from .env properties
 tdtheaders["x-api-key"] = apikey; 
 rtbody.client.licenseKey = licensekey;
 rtbody.documentLibraryVersion = doclib;
@@ -46,11 +46,12 @@ app.listen(process.env.PORT || 3000, function() {
   console.log('Express server listening on port %d in %s mode', this.address().port, app.settings.env);
 });
 
-// Primary entry point for REPL
+// Launch our own index.html from the GET
 app.get("/", function(req, res) {  
   res.sendFile('public/index.html'); // no need to specify dir off root
 });
 
+// Handle a /getdocs POST
 app.post("/getdocs", function(req, res) {
   console.log('A - getdocs post hit...');
   let receivedData = JSON.parse(req.body.payload); 
@@ -60,6 +61,7 @@ app.post("/getdocs", function(req, res) {
   );
 });
 
+// Asynchronous function to handle e2e workflow
 async function getDocs(receivedData) {
   console.log('B - getDocs() hit...');
   // 1 - CALL TDT 
@@ -77,8 +79,6 @@ async function getDocs(receivedData) {
   let sessionId = rtResponse.data.session.id;
   console.log("2 - Runtime PaymentCalc SessionId = " + sessionId);
 
-// console.log('RUNTIME BODY A = ' + JSON.stringify(rtbody));
-
   // 3 - CALL SESSION TO GET DELTA TXL
   sessbody.session.id = sessionId;
   sessbody.fullTransactionData = 'false';
@@ -94,8 +94,6 @@ async function getDocs(receivedData) {
   let rtlendResponse = await axios.post(rtlendurl, rtbody, { headers: rtheaders});
   let lendsessionId = rtlendResponse.data.session.id;
   console.log("4 - Runtime Lending SessionId = " + lendsessionId);
-
-// console.log('RUNTIME BODY B= ' + JSON.stringify(rtbody));
 
   // 5 - CALL SESSION TO GET FULL TXL
   sessbody.session.id = lendsessionId;
@@ -120,7 +118,8 @@ async function getDocs(receivedData) {
   //let immStatus = forwarding status
   */
   
-  // 8 - ClearSessions
+  // 8 - ClearSessions 
+  // TODO: Send async (even though it is .2 seconds on average)
   clearbody.session.id = sessionId;  
   let clearPymtCalc = await axios.post(clearurl, clearbody, { headers: rtheaders});
   // console.log('Clear PaymentCalc = ' + JSON.stringify(clearPymtCalc.data));
