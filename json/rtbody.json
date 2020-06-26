@@ -8,5 +8,5 @@
   },
   "notificationUrl": "",
   "redirectUrl": "",
-  "transactionData": ""
+  "transactionData": [""]
 }

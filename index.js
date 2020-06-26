@@ -1,3 +1,4 @@
+require('console-stamp')(console, '[HH:MM:ss.l]');
 const express = require('express');
 const axios = require('axios'); 
 const bodyParser = require("body-parser");
@@ -8,7 +9,9 @@ const { base64encode, base64decode } = require('nodejs-base64');
 const apikey = process.env.apikey;
 const tdturl = process.env.tdturl;
 const rturl = process.env.rturl;
+const rtlendurl =process.env.rtlendurl;
 const sessurl = process.env.sessurl;
+const clearurl = process.env.clearurl;
 const dclurl = process.env.dclurl;
 const licensekey = process.env.licensekey;
 const doclib = process.env.doclib;
@@ -21,6 +24,7 @@ const rtbody = require('./json/rtbody.json');
 const sessbody = require('./json/sessbody.json');
 const dclbody = require('./json/dclbody.json');
 const immbody = require('./json/immbody.json');
+const clearbody = require('./json/clearbody.json');
 
 // Update our JSON from .env properties
 tdtheaders["x-api-key"] = apikey; 
@@ -43,13 +47,12 @@ app.listen(process.env.PORT || 3000, function() {
 });
 
 // Primary entry point for REPL
-app.get("/", function(req, res) {
-  console.log('A - GET hit...');
+app.get("/", function(req, res) {  
   res.sendFile('public/index.html'); // no need to specify dir off root
 });
 
 app.post("/getdocs", function(req, res) {
-  console.log('B - getdocs post hit...');
+  console.log('A - getdocs post hit...');
   let receivedData = JSON.parse(req.body.payload); 
   getDocs(receivedData).then(
     function(result) { res.send(result); },
@@ -58,7 +61,7 @@ app.post("/getdocs", function(req, res) {
 });
 
 async function getDocs(receivedData) {
-  console.log('C - getDocs() hit...');
+  console.log('B - getDocs() hit...');
   // 1 - CALL TDT 
   let base64data = base64encode(JSON.stringify(receivedData)); 
   tdtbody.partnerData = base64data;
@@ -69,25 +72,46 @@ async function getDocs(receivedData) {
 
   // 2 - CALL RUNTIME PAYMENT CALC
   let base64payload = base64encode(txl); 
-  rtbody.transactionData = base64payload;
+  rtbody.transactionData[0] = base64payload;
   let rtResponse = await axios.post(rturl, rtbody, { headers: rtheaders});
   let sessionId = rtResponse.data.session.id;
-  console.log("2 - SessionId = " + sessionId);
+  console.log("2 - Runtime PaymentCalc SessionId = " + sessionId);
 
-  // 3 - CALL SESSION TO GET FULL TXL
+// console.log('RUNTIME BODY A = ' + JSON.stringify(rtbody));
+
+  // 3 - CALL SESSION TO GET DELTA TXL
   sessbody.session.id = sessionId;
+  sessbody.fullTransactionData = 'false';
   let sessResponse = await axios.post(sessurl, sessbody, { headers: rtheaders});
-  let fulltxl = sessResponse.data.transactionData;
-  // let fulltxldecoded = base64decode(fulltxl);
-  console.log("3 - Full Txl received");
+  let deltatxl = sessResponse.data.transactionData;
+  // console.log('session body = ' + JSON.stringify(sessbody));
+  console.log("3 - Delta Txl received from PaymentCalc");
+  
+  // 4 - CALL RUNTIME LENDING   
+  rtbody.transactionData[0] = ''; 
+  rtbody.transactionData[0] = deltatxl;
+  rtbody.transactionData[1] = base64payload; // received earlier (original payload)
+  let rtlendResponse = await axios.post(rtlendurl, rtbody, { headers: rtheaders});
+  let lendsessionId = rtlendResponse.data.session.id;
+  console.log("4 - Runtime Lending SessionId = " + lendsessionId);
 
-  // 4 - CALL DCL EXECUTE JOB TICKET
+// console.log('RUNTIME BODY B= ' + JSON.stringify(rtbody));
+
+  // 5 - CALL SESSION TO GET FULL TXL
+  sessbody.session.id = lendsessionId;
+  sessbody.fullTransactionData = 'true';
+  let sessResponseLend = await axios.post(sessurl, sessbody, { headers: rtheaders});
+  let fulltxl = sessResponseLend.data.transactionData;
+  // console.log('session body = ' + JSON.stringify(sessbody));
+  console.log("5 - Full Txl received from Lending");
+
+  // 6 - CALL DCL EXECUTE JOB TICKET
   dclbody.jobTicket.DataValuesList[0].content = fulltxl;
   let dclResponse = await axios.post(dclurl, dclbody, { headers: rtheaders});
   let encodedPdf = dclResponse.data.Result.RenderedFiles[0].Content;
-  console.log("4 - Encoded PDF returned");
+  console.log("6 - Encoded PDF returned");
 
-  // 5 - CALL DCL AGAIN TO SEND DOCUMENTS TO IMM
+  // 7 - CALL DCL AGAIN TO SEND DOCUMENTS TO IMM
   /*
   immbody.jobTicket.DataValuesList[0].content = fulltxl;
   let immResponse = await axios.post(dclurl, immbody, { headers: rtheaders});
@@ -95,6 +119,15 @@ async function getDocs(receivedData) {
   console.log('Forwarding Results = ' + forwardingResults);
   //let immStatus = forwarding status
   */
+  
+  // 8 - ClearSessions
+  clearbody.session.id = sessionId;  
+  let clearPymtCalc = await axios.post(clearurl, clearbody, { headers: rtheaders});
+  // console.log('Clear PaymentCalc = ' + JSON.stringify(clearPymtCalc.data));
+  clearbody.session.id = lendsessionId;
+  let clearLending = await axios.post(clearurl, clearbody, { headers: rtheaders});
+  // console.log('Clear Lending = ' + JSON.stringify(clearLending.data));
+  console.log('8 - Cleared our Runtime Sessions...');
 
   let forwardingResults = 'IMM commented off until TDT has signing meta...';
 
