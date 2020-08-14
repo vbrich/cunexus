@@ -29,7 +29,7 @@ const immbody = require('./json/immbody.json');
 const clearbody = require('./json/clearbody.json');
 
 let ispayloadjson = true;
-let logpath = 'logs';
+var now = new Date().getUTCMilliseconds();
 
 // Update our JSON files from .env properties
 tdtheaders["x-api-key"] = apikey; 
@@ -59,6 +59,7 @@ app.get("/", function(req, res) {
 // Handle a /getdocs POST
 app.post("/getdocs", function(req, res) {
   console.log('A - getdocs post hit...');
+  purgeLogs();
   let receivedData;
   if (isJson(req.body.payload))
     receivedData = JSON.parse(req.body.payload);
@@ -75,28 +76,25 @@ app.post("/getdocs", function(req, res) {
 // Asynchronous function to handle e2e workflow
 async function getDocs(receivedData) {
   console.log('B - getDocs() hit...');
-purgefiles();
-
+  
   // 1 - CALL TDT 
   let base64data;
   if (ispayloadjson) {
     receivedData = JSON.stringify(receivedData);
     base64data = base64encode(receivedData); 
   } else {
-    console.log('B - getDocs() found non-JSON payload...');
+    console.log('C - getDocs() found non-JSON payload...');
     base64data = base64encode(receivedData);
     tdtbody.translatorCode = 'txl';
     tdtbody.mappingData.data = 'csi_empty.json';
   }
-logpath = 'logs/1_tdtinput';
-writelog(receivedData);
+  writelog('logs/' + now + '_1_tdtinput', receivedData);
   tdtbody.partnerData = base64data;
   let tdtResponse = await axios.post(tdturl, tdtbody, { headers: tdtheaders});
   let buff = Buffer.from(tdtResponse.data.txl, 'base64');
   let txl = buff.toString('ascii');
   console.log("1 - TXL received");
-logpath = 'logs/1_tdtoutput';
-writelog(txl);
+  writelog('logs/' + now + '_1_tdtoutput', txl);
 
   // 2 - CALL RUNTIME PAYMENT CALC
   let base64payload = base64encode(txl); 
@@ -105,8 +103,7 @@ writelog(txl);
   //console.log(rtResponse);
   let sessionId = rtResponse.data.session.id;
   console.log("2 - Runtime PaymentCalc SessionId = " + sessionId);
-logpath = 'logs/2_calcsession';
-writelog(rtResponse.data.url);
+  writelog('logs/' + now + '_2_calcsession', rtResponse.data.url);
 
   // 3 - CALL SESSION TO GET DELTA TXL
   sessbody.session.id = sessionId;
@@ -115,8 +112,7 @@ writelog(rtResponse.data.url);
   let deltatxl = sessResponse.data.transactionData;
   // console.log('session body = ' + JSON.stringify(sessbody));
   console.log("3 - Delta Txl received from PaymentCalc");
-logpath = 'logs/3_deltatxl';
-writelog(deltatxl);  
+  writelog('logs/' + now + '_3_deltatxl', deltatxl);  
 
   // 4 - CALL RUNTIME LENDING   
   rtbody.transactionData[0] = ''; 
@@ -125,8 +121,7 @@ writelog(deltatxl);
   let rtlendResponse = await axios.post(rtlendurl, rtbody, { headers: rtheaders});
   let lendsessionId = rtlendResponse.data.session.id;
   console.log("4 - Runtime Lending SessionId = " + lendsessionId);
-logpath = 'logs/4_lendingsession';
-writelog(rtlendResponse.data.url);
+  writelog('logs/' + now + '_4_lendingsession', rtlendResponse.data.url);
 
   // 5 - CALL SESSION TO GET FULL TXL
   sessbody.session.id = lendsessionId;
@@ -135,19 +130,15 @@ writelog(rtlendResponse.data.url);
   let fulltxl = sessResponseLend.data.transactionData;
   // console.log('session body = ' + JSON.stringify(sessbody));
   console.log("5 - Full Txl received from Lending");
-logpath = 'logs/5_fulltxl';
-writelog(fulltxl);
+  writelog('logs/' + now + '_5_fulltxldecoded', base64decode(fulltxl));
 
   // 6 - CALL DCL EXECUTE JOB TICKET
   dclbody.jobTicket.DataValuesList[0].content = fulltxl;
   let dclResponse = await axios.post(dclurl, dclbody, { headers: rtheaders});
-logpath = 'logs/6_dclresponse';
-writelog(util.inspect(dclResponse)); // replace circular links since JSON.stringify had issues
-// console.log(util.inspect(dclResponse));
+  writelog('logs/' + now + '_6_dclresponse', util.inspect(dclResponse)); // replace circular links since JSON.stringify had issues
   let encodedPdf = dclResponse.data.Result.RenderedFiles[0].Content;
   console.log("6 - Encoded PDF returned");
-logpath = 'logs/6_pdf';
-writelog(encodedPdf);
+  writelog('logs/' + now + '_6_pdf', encodedPdf);
 
   // 7 - CALL DCL AGAIN TO SEND DOCUMENTS TO IMM
   /*
@@ -180,38 +171,26 @@ function isJson(str) {
   return true;
 }
 
-function writelog(str) {
-  fs.writeFile(logpath, str, function (error) {
+function writelog(logpath, data) {
+  fs.writeFile(logpath, data, function (error) {
     if (error) {
       console.error(error);
     }
   });
 }
 
-function purgefiles() {
-  deleteFile('logs/1_tdtinput');
-  deleteFile('logs/1_tdtoutput');
-  deleteFile('logs/2_calcsession');
-  deleteFile('logs/3_deltatxl');
-  deleteFile('logs/4_lendingsession');
-  deleteFile('logs/5_fulltxl');
-  deleteFile('logs/6_dclresponse');
-  deleteFile('logs/6_pdf');
-}
-
-function deleteFile(pathToFile) {
-  try {
-    if (fs.existsSync(pathToFile)) {
-      fs.unlink(pathToFile, function(err) {
-        if (err) {
-          throw err
-        } else {
-          console.log("Successfully deleted " + pathToFile);
-        }
-      });
+function purgeLogs() {
+  const dir = fs.opendirSync('logs')
+  let logfile;
+  while ((logfile = dir.readSync()) !== null) {
+    let logpath = 'logs/' + logfile.name;
+    fs.unlink(logpath, function(err) {
+      if (err) {
+        throw err
+      } else {
+        console.log("Successfully deleted " + logpath);
+      }
+    });
     }
-  } catch(err) {
-    console.error(err)
-  }
-
+  dir.closeSync()
 }
