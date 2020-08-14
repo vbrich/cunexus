@@ -17,28 +17,24 @@
         "Type": "xml"
       }
     ],
-    "DocList": [
-      {
-        "CrossReference": null,
-        "FxlList": [
-          {
-            "ContentType": 5,
-            "Content": "Lending.fxl"
-          }
-        ],
+        "DocList": [
+					{
+          	"CrossReference": null,
+            "FxlList": [{
+            	"ContentType": 5,
+              "Content": "Lending.fxl"
+            }]
+				}],
         "DstFile": {
-          "ContentType": 2,
-          "PdfProperties": {
-            "ContentType": 1,
-            "InsertBlankPagesForDuplexPrinting": false,
-            "digitalsignatureprovider": "IMMeSign",
-            "drawcheckboxfieldsas": "noValue",
-            "drawdigitalsignaturefieldas": "digitalSignature"
-          }
-        },
-        "NumberOfCopies": 1
-      }
-    ],
+					"ContentType": 2,
+					"PdfProperties": {
+						"ContentType": 1,
+						"InsertBlankPagesForDuplexPrinting": false,
+						"digitalsignatureprovider": "IMMeSign",
+						"drawcheckboxfieldsas": "noValue",
+						"drawdigitalsignaturefieldas": "digitalSignature"
+					}
+         },
     "Prefs": {
       "NumberOfCopies": 1,
       "AutomaticSupplementalDiscovery": true,
