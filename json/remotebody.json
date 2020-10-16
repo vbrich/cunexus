@@ -1,0 +1,22 @@
+  {
+    "RemotePartyDetails": [
+      {
+        "FullName": "Rich Boesch",
+        "Email": "richard.boesch@gmail.com",
+        "Details": "Some details on the party 1...",
+        "RemoteAuthenticationType": "Email",
+        "RemoteSigningOrder": "1"
+      }
+    ],
+    "MessageDetails": {
+      "SenderEmail": "employee1@immonline.com",
+      "CCEmails":  [
+            "employee1@immonline.com"
+          ],
+      "TemplateName": "",
+      "Subject": "Document Set for Testing",
+      "Message": "Please accept or sign the documents."
+    },
+    "RedirectURL": "https://www.google.com",
+    "RedirectDelay": 10
+  }
