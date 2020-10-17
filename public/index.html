@@ -17,7 +17,7 @@
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
-        <span class="mdl-layout-title">Integration POC</span>
+        <span class="mdl-layout-title">IMM Test Tool</span>
         </div>
       </header>
     <main class="mdl-layout__content">
@@ -27,27 +27,50 @@
       <div id="main" width="90%">
         <form method="POST">
           <!--<input type="hidden" id="payload" name="payload">-->   
-          <input type="text" id="p1Name" name="p1Name" size="25" placeholder="P1 Name" value="John Dough" />
-          <br />
 
-          <input type="text" id="p1Email" name="p1Email" size="25" placeholder="P1 Email" value="vb_rich@yahoo.com" />
+<!--
+          <input type="text" id="htmlUrl" name="htmlUrl" size="60" placeholder="URL of HTML to convert" value="http://yourdocuments.compliancesystems.io/e6fabc5cb5f3.html" />
           <br />
+-->          
+          <select id="requestType" name="requestType">
+            <option value="direct">Direct</option>
+            <option value="remote" selected>Remote</option>
+          </select>
+          <br /><br />
 
+          <input type="text" id="p1Name" name="p1Name" size="25" placeholder="P1 Name" value="Joe Dirt" />
+          <br />
+          <input type="text" id="p1Email" name="p1Email" size="25" placeholder="P1 Email" value="richard.boesch@gmail.com" />
+          <br />
           <input type="text" id="p1Phone" name="p1Phone" size="25" placeholder="P1 Phone" value="9169348450" />
           <br />
-
           <input type="text" id="p1Password" name="p1Password" size="25" placeholder="P1 Password" value="Manga123!" />
           <br />
+          <select id="p1RemoteType" name="p1RemoteType">
+            <option value="Email">Email</option>
+            <option value="Phone">Phone</option>
+            <option value="KBA">KBA</option>
+          </select>
+          <br /><br />
 
-          <select id="authType">
-            <option value="inPerson">In Person</option>
+          <select id="p2Exist" name="p2Exists">
+            <option value="yes">SendP2</option>
+            <option value="no" selected>HideP2</option>
+          </select>
+          <br />
+          <input type="text" id="p2Name" name="p2Name" size="25" placeholder="P2 Name" value="Jane Dirt" />
+          <br />
+          <input type="text" id="p2Email" name="p2Email" size="25" placeholder="P2 Email" value="richard.boesch@gmail.com" />
+          <br />
+          <input type="text" id="p2Phone" name="p2Phone" size="25" placeholder="P2 Phone" value="9169348450" />
+          <br />
+          <input type="text" id="p2Password" name="p2Password" size="25" placeholder="P2 Password" value="Manga123!" />
+          <br />
+          <select id="p2RemoteType" name="p2RemoteType">
             <option value="email">Email</option>
             <option value="phone">Phone</option>
             <option value="KBA">KBA</option>
           </select>
-          <br />
-
-          <input type="text" id="htmlUrl" name="htmlUrl" size="60" placeholder="URL of HTML to convert" value="http://yourdocuments.compliancesystems.io/e6fabc5cb5f3.html" />
           <br />
 
           <br />

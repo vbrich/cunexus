@@ -73,8 +73,7 @@ app.get("/", function(req, res) {
 // * Handle a /sendimm POST
 // **************************************
 app.post("/sendimm", function(req, res) {
-  purgeLogs();
-  console.log('\n\n(0)--->' + req.body); 
+  purgeLogs();  
   sendIMM(req.body).then(
     function(result) { res.send(result); },
     function(error) { res.send(error); }
@@ -86,7 +85,62 @@ app.post("/sendimm", function(req, res) {
 // **************************************
 async function sendIMM(receivedData) {
   writelog('logs/' + now + '_1_receivedData', JSON.stringify(receivedData));
-  
+
+  // YES, THIS IS ABOUT TO GET GHETTO AND HACKED AS QUICKLY AS POSSIBLE...
+  let requestType = receivedData.requestType;    
+  let p1Name = receivedData.p1Name;
+  let p1Email = receivedData.p1Email;
+  let p1Phone = receivedData.p1Phone;
+  let p1Password = receivedData.p1Password;
+  let p1RemoteType = receivedData.p1RemoteType;
+  let p2Exists = receivedData.p2Exists;
+  let p2Name = receivedData.p2Name;
+  let p2Email = receivedData.p2Email;
+  let p2Phone = receivedData.p2Phone;
+  let p2Password = receivedData.p2Password; 
+  let p2RemoteType = receivedData.p2RemoteType;
+
+  createsessbody.Parties[0].Email = p1Email;
+  createsessbody.Parties[0].PhoneNumber = p1Phone;
+  createsessbody.Parties[0].FullName = p1Name;
+  adddocbody.PartyMappings[0].FullName = p1Name;
+  adddocbody.PartyMappings[0].PartyId = 'P1';
+  remotebody.RemotePartyDetails[0].FullName = p1Name;
+  remotebody.RemotePartyDetails[0].Email = p1Email;
+  remotebody.RemotePartyDetails[0].RemoteAuthenticationType = p1RemoteType;
+  remotebody.RemotePartyDetails[0].RemoteSigningOrder = '1'; // default to parallel signing
+  if (p1RemoteType == 'Phone') {
+    remotebody.RemotePartyDetails[0].Details = p1Phone;
+  } else if (p1RemoteType == 'Password') {
+    remotebody.RemotePartyDetails[0].Details = p1Password;
+  } else {
+    remotebody.RemotePartyDetails[0].Details = 'These are our details...';
+  }
+console.log('p2Exists = ' + p2Exists);
+  if (p2Exists == 'yes') {
+    createsessbody['Parties'].push({"Email": "tbd","PhoneNumber": "tbd","PhoneCountryCode": "1","FullName": "tbd"});
+    adddocbody['PartyMappings'].push({"Action": "view","FullName": "tbd","PartyId": "P2"});
+    remotebody['RemotePartyDetails'].push({"FullName": "tbd","Email": "tbd","Details": "tbd","RemoteAuthenticationType": "Email","RemoteSigningOrder": "1"});
+    createsessbody.Parties[1].Email = p2Email;
+    createsessbody.Parties[1].PhoneNumber = p2Phone;
+    createsessbody.Parties[1].FullName = p2Name;
+    adddocbody.PartyMappings[1].FullName = p2Name;
+    remotebody.RemotePartyDetails[1].FullName = p2Name;
+    remotebody.RemotePartyDetails[1].Email = p2Email;
+    remotebody.RemotePartyDetails[1].RemoteAuthenticationType = p2RemoteType;
+    remotebody.RemotePartyDetails[1].RemoteSigningOrder = '1'; 
+    if (p2RemoteType == 'Phone') {
+      remotebody.RemotePartyDetails[1].Details = p2Phone;
+    } else if (p2RemoteType == 'Password') {
+      remotebody.RemotePartyDetails[1].Details = p2Password;
+    } else {
+      remotebody.RemotePartyDetails[1].Details = 'These are our details...';
+    } 
+  }
+  // console.log('CreateSession = ' + JSON.stringify(createsessbody));
+  // console.log('AddDoc = ' + JSON.stringify(adddocbody));
+  // console.log('RemoteBody = ' + JSON.stringify(remotebody));
+
   // **************************************
   // A - Login and get our access token
   // **************************************
@@ -114,26 +168,25 @@ async function sendIMM(receivedData) {
   // console.log(adddocresponse.data);
 
   // **************************************
-  // D - Commit Session (all documents in IMM site for Banker)
+  // D - Commit Session or Remote Call
   // **************************************
-  /*
-  commitendpoint = commitendpoint + '/session/' + hostsessionid + '/commit';
-  console.log('\n\n(D)--->' + commitendpoint);
-  commitresponse = await axios.put(commitendpoint, '', { headers: sessheader});
-  console.log(commitresponse);
-  */
-
-  // **************************************
-  // D - Remote Call (does commit for you)
-  // **************************************
-  remoteendpoint2 = remoteendpoint + '/remote/' + hostsessionid;
-  console.log('\n\n(D)--->' + remoteendpoint2);
-  remoteresponse = await axios.put(remoteendpoint2, remotebody, { headers: sessheader});
-  // console.log(remoteresponse.data);
+  let response = "";
+  if (requestType === 'direct') {
+    console.log("Direct was found...");
+    commitendpoint = commitendpoint + '/session/' + hostsessionid + '/commit';
+    console.log('\n\n(D)--->' + commitendpoint);
+    commitresponse = await axios.put(commitendpoint, '', { headers: sessheader});
+    response = '<a href="https://integrations.immesign.com/v2019.2/TeAASP/" target="blank">IMM Site</a>';
+  } else {
+    console.log("Remote was found...");
+    remoteendpoint2 = remoteendpoint + '/remote/' + hostsessionid;
+    console.log('\n\n(D)--->' + remoteendpoint2);
+    remoteresponse = await axios.put(remoteendpoint2, remotebody, { headers: sessheader});
+    response = JSON.stringify(remoteresponse.data);
+  }
 
   let backUrl = '<a href="https://HTML2IMM.sbatester.repl.co">Go Back</a>';
-
-  return('<html>' + backUrl + '<br><br>' + JSON.stringify(remoteresponse.data) + '</html>');
+  return('<html>' + backUrl + '<br><br>' + response + '</html>');
 }
 
 function writelog(logpath, data) {
