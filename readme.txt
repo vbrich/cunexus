@@ -1,6 +1,6 @@
 Notes
-1. IMM password must be certain characteristics or the remote call fails
+1. IMM password must be certain characteristics or the remote call fails (need to find those specs)
 
 
-* Parallel vs Sequential
+
 * 'Get' examples after signing

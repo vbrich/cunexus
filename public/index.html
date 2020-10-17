@@ -3,7 +3,6 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="style.css">
-    <link href="darktheme.css" rel="stylesheet" type="text/css">
     <!-- Material Lite -->
     <!-- https://getmdl.io/started/index.html -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -17,7 +16,7 @@
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
-        <span class="mdl-layout-title">Esign Examples</span>
+        <span class="mdl-layout-title">Esign Playground</span>
         </div>
       </header>
     <main class="mdl-layout__content">
@@ -29,8 +28,8 @@
        
           <span>Do you want send direct to the IMM site (banker) or remote to the Party (customers)?</span>
           <select id="requestType" name="requestType">
-            <option value="direct">Direct</option>
-            <option value="remote" selected>Remote</option>
+            <option value="direct" selected>Direct</option>
+            <option value="remote">Remote</option>
           </select>
           <br /><br />
 
@@ -136,6 +135,18 @@
       </div>
       <br><br>
 
+      <table style="color: grey;">
+        <tr>
+          <td>
+            Some features not shown...<br/>
+            <ul>
+              <li>Can support more than 2 parties</li>
+              <li>Can send assign parties differently to each document</li>
+              <li>Documents can be sent as Skip (party wont have to review it during the signing ceremony)</li>
+            </ul>
+          </td>
+        </tr>
+      </table>
     </div>
   </main>
 </div>

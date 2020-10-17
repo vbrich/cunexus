@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- Material Lite -->
+    <!-- https://getmdl.io/started/index.html -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!--<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">-->
+    <link rel="stylesheet" href="material.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  </head>
+
+  <body>
+
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">Esign Response Page</span>
+        </div>
+      </header>
+    <main class="mdl-layout__content">
+
+    <div align="center">
+      <br><br>
+      <div id="main" width="90%">
+
+        <br /><br />
+        <a href="https://HTML2IMM.sbatester.repl.co">Start Over</a><br />
+        <a href="https://integrations.immesign.com/v2019.2/TeAASP" target="_blank">Visit IMM Site</a><br />
+
+        <form method="POST">
+          <table border="1">
+            <tr>
+              <td><span>RequestType</span></td>
+              <td><input type="text" id="reqtype" name="reqtype" size="25" value="" /></td>
+            </tr>
+            <tr>
+              <td><span>AccessToken</span></td>
+              <td><input type="text" id="acctok" name="acctok" size="25" value="" /></td>
+            </tr>
+            <tr>
+              <td><span>HostSessionId</span></td>
+              <td><input type="text" id="sessid" name="sessid" size="25" value="" /></td>
+            </tr>
+          </table>
+          <br /><br />
+          
+          <button
+            class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary"
+            id="myBtn" 
+            formaction="/getsession">
+            Get Session
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+
+<script>
+  // Get Request Parameters...
+  function getParams() {
+    var params = {},
+        pairs = document.URL.split('?')
+               .pop()
+               .split('&');
+    for (var i = 0, p; i < pairs.length; i++) {
+           p = pairs[i].split('=');
+           params[ p[0] ] =  p[1];
+    }     
+    return params;
+  }
+  params = getParams();
+  for( var i in params ){
+    console.log( i , params[i] );
+    if (i != null) 
+      if (i == 'reqtype' || i == 'acctok' || i == 'sessid') {
+        // document.getElementById(i).innerHTML = params[i];
+        document.getElementById(i).value = params[i];
+      }
+  }
+</script>
+
+  </body>
+</html>

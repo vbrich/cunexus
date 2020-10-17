@@ -63,22 +63,58 @@ app.listen(process.env.PORT || 3000, function() {
 });
 
 // **************************************
-// * Launch index.html
+// * GETs
 // **************************************
 app.get("/", function(req, res) {
   res.sendFile('public/index.html'); // no need to specify dir off root
 });
+app.get("/response", function(req, res) {
+  res.sendFile('public/response.html');
+});
 
 // **************************************
-// * Handle a /sendimm POST
+// * POSTs
 // **************************************
 app.post("/sendimm", function(req, res) {
   purgeLogs();  
   sendIMM(req.body).then(
+    function(result) { res.redirect(result); },
+    function(error) { res.send(error); }
+  );
+});
+app.post("/test", function(req, res) {
+  res.send('testing...' + JSON.stringify(req.body));
+});
+app.post("/getsession", function(req, res) {
+  console.log('\n\n /GetSession has been hit...');
+  getSession(req.body).then(
     function(result) { res.send(result); },
     function(error) { res.send(error); }
   );
 });
+app.post("/getsessionstatus", function(req, res) {
+  res.send('testing...' + JSON.stringify(req.body));
+});
+app.post("/getdocreport", function(req, res) {
+  res.send('testing...' + JSON.stringify(req.body));
+});
+
+async function getSession(data) {
+  console.log('\n\n' + 'Data = ' + JSON.stringify(data));
+  // sessheader["access-token"] = data.acctok;
+  let url = 'https://integrations.immesign.com/v2019.2/TeAASP/eSignapi/v1/remote/' + data.sessid + '/status';
+  console.log('\n\nurl = ' + url);
+  
+  // const response = await axios.get(url, { headers: sessheader});
+  const response = await axios.get(url, {
+  headers: {
+    'access-token': data.acctok
+  }
+  });
+
+  console.log('\n\n Response = ' + response);
+  return response;
+}
 
 // **************************************
 // * sendIMM()
@@ -210,8 +246,11 @@ console.log('p2Exists = ' + p2Exists);
     response = JSON.stringify(remoteresponse.data);
   }
 
-  let backUrl = '<a href="https://HTML2IMM.sbatester.repl.co">Go Back</a>';
-  return('<html>' + backUrl + '<br><br>' + response + '</html>');
+  // let backUrl = '<a href="https://HTML2IMM.sbatester.repl.co">Go Back</a>';
+  // return('<html>' + backUrl + '<br><br>' + response + '</html>');
+
+  // return where to redirect the user
+  return('https://HTML2IMM.sbatester.repl.co/response.html?reqtype=' + requestType + '&acctok=' + accesstoken + '&sessid=' + hostsessionid); 
 }
 
 function writelog(logpath, data) {
