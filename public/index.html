@@ -26,29 +26,31 @@
       <br><br>
       <div id="main" width="90%">
         <form method="POST">
-          <!--<input type="hidden" id="payload" name="payload">-->   
-
-<!--
-          <input type="text" id="htmlUrl" name="htmlUrl" size="60" placeholder="URL of HTML to convert" value="http://yourdocuments.compliancesystems.io/e6fabc5cb5f3.html" />
-          <br />
--->          
+       
           <select id="requestType" name="requestType">
             <option value="direct">Direct</option>
             <option value="remote" selected>Remote</option>
           </select>
           <br /><br />
 
-          <input type="text" id="p1Name" name="p1Name" size="25" placeholder="P1 Name" value="Joe Dirt" />
+          <select id="docType" name="docType">
+            <option value="signature">Signature</option>
+            <option value="nosignature" selected>No Signature</option>
+          </select>
+          <br /><br />
+
+          <input type="text" id="p1Name" name="p1Name" size="25" placeholder="P1 Name" value="John Doe" />
           <br />
-          <input type="text" id="p1Email" name="p1Email" size="25" placeholder="P1 Email" value="richard.boesch@gmail.com" />
+          <input type="text" id="p1Email" name="p1Email" size="25" placeholder="P1 Email" value="FolsomOffice916@gmail.com" />
           <br />
           <input type="text" id="p1Phone" name="p1Phone" size="25" placeholder="P1 Phone" value="9169348450" />
           <br />
-          <input type="text" id="p1Password" name="p1Password" size="25" placeholder="P1 Password" value="Manga123!" />
+          <input type="text" id="p1Password" name="p1Password" size="25" placeholder="P1 Password" value="Password123!" />
           <br />
           <select id="p1RemoteType" name="p1RemoteType">
             <option value="Email">Email</option>
             <option value="Phone">Phone</option>
+            <option value="Password">Password</option>
             <option value="KBA">KBA</option>
           </select>
           <br /><br />
@@ -58,17 +60,18 @@
             <option value="no" selected>HideP2</option>
           </select>
           <br />
-          <input type="text" id="p2Name" name="p2Name" size="25" placeholder="P2 Name" value="Jane Dirt" />
+          <input type="text" id="p2Name" name="p2Name" size="25" placeholder="P2 Name" value="Jane Doe" />
           <br />
-          <input type="text" id="p2Email" name="p2Email" size="25" placeholder="P2 Email" value="richard.boesch@gmail.com" />
+          <input type="text" id="p2Email" name="p2Email" size="25" placeholder="P2 Email" value="sbadoc.test@gmail.com" />
           <br />
           <input type="text" id="p2Phone" name="p2Phone" size="25" placeholder="P2 Phone" value="9169348450" />
           <br />
-          <input type="text" id="p2Password" name="p2Password" size="25" placeholder="P2 Password" value="Manga123!" />
+          <input type="text" id="p2Password" name="p2Password" size="25" placeholder="P2 Password" value="Password123!" />
           <br />
           <select id="p2RemoteType" name="p2RemoteType">
-            <option value="email">Email</option>
-            <option value="phone">Phone</option>
+            <option value="Email">Email</option>
+            <option value="Phone">Phone</option>
+            <option value="Password">Password</option>
             <option value="KBA">KBA</option>
           </select>
           <br />
