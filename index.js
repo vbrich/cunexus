@@ -85,8 +85,6 @@ app.post("/sendimm", function(req, res) {
 // **************************************
 async function sendIMM(receivedData) {
   writelog('logs/' + now + '_1_receivedData', 'Received from UI' + '\n\n' + JSON.stringify(receivedData));
-
-  // YES, THIS IS ABOUT TO GET GHETTO AND HACKED AS QUICKLY AS POSSIBLE THIS WEEKEND...
   
   // Reset some variables
   commitendpoint = immendpoint + '/eSignapi/v1';
@@ -109,6 +107,7 @@ async function sendIMM(receivedData) {
   let p2Phone = receivedData.p2Phone;
   let p2Password = receivedData.p2Password; 
   let p2RemoteType = receivedData.p2RemoteType;
+  let signingType = receivedData.signingType;
   createsessbody.Parties[0].Email = p1Email;
   createsessbody.Parties[0].PhoneNumber = p1Phone;
   createsessbody.Parties[0].FullName = p1Name;
@@ -119,7 +118,7 @@ async function sendIMM(receivedData) {
   remotebody.RemotePartyDetails[0].FullName = p1Name;
   remotebody.RemotePartyDetails[0].Email = p1Email;
   remotebody.RemotePartyDetails[0].RemoteAuthenticationType = p1RemoteType;
-  remotebody.RemotePartyDetails[0].RemoteSigningOrder = '1'; // default to parallel signing
+  remotebody.RemotePartyDetails[0].RemoteSigningOrder = '1'; 
   if (p1RemoteType == 'Phone') {
     remotebody.RemotePartyDetails[0].Details = p1Phone;
   } else if (p1RemoteType == 'Password') {
@@ -144,7 +143,9 @@ console.log('p2Exists = ' + p2Exists);
     remotebody.RemotePartyDetails[1].FullName = p2Name;
     remotebody.RemotePartyDetails[1].Email = p2Email;
     remotebody.RemotePartyDetails[1].RemoteAuthenticationType = p2RemoteType;
-    remotebody.RemotePartyDetails[1].RemoteSigningOrder = '1'; 
+    if (signingType == '2') {
+      remotebody.RemotePartyDetails[1].RemoteSigningOrder = '2'; // sequential signing
+    }
     if (p2RemoteType == 'Phone') {
       remotebody.RemotePartyDetails[1].Details = p2Phone;
     } else if (p2RemoteType == 'Password') {
@@ -199,7 +200,7 @@ console.log('p2Exists = ' + p2Exists);
     commitendpoint = commitendpoint + '/session/' + hostsessionid + '/commit';
     console.log('\n\n(D) ' + commitendpoint);
     commitresponse = await axios.put(commitendpoint, '', { headers: sessheader});
-    console.log(commitresponse);
+    // console.log(commitresponse);
     response = '<a href="https://integrations.immesign.com/v2019.2/TeAASP/" target="blank">IMM Site</a>';
   } else {
     console.log("*** Remote Integration was requested...");

@@ -17,7 +17,7 @@
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
-        <span class="mdl-layout-title">IMM Test Tool</span>
+        <span class="mdl-layout-title">Esign Examples</span>
         </div>
       </header>
     <main class="mdl-layout__content">
@@ -27,53 +27,97 @@
       <div id="main" width="90%">
         <form method="POST">
        
+          <span>Do you want send direct to the IMM site (banker) or remote to the Party (customers)?</span>
           <select id="requestType" name="requestType">
             <option value="direct">Direct</option>
             <option value="remote" selected>Remote</option>
           </select>
           <br /><br />
 
+          <span>Do you want to send a PDF with signatures or without?</span>
           <select id="docType" name="docType">
             <option value="signature">Signature</option>
             <option value="nosignature" selected>No Signature</option>
           </select>
           <br /><br />
 
-          <input type="text" id="p1Name" name="p1Name" size="25" placeholder="P1 Name" value="John Doe" />
+          <table border="1">
+            <tr>
+              <td><span>Full Name</span></td>
+              <td><input type="text" id="p1Name" name="p1Name" size="25" placeholder="P1 Name" value="John Doe" /></td>
+            </tr>
+            <tr>
+              <td><span>Email</span></td>
+              <td><input type="text" id="p1Email" name="p1Email" size="25" placeholder="P1 Email" value="FolsomOffice916@gmail.com" /></td>
+            </tr>
+            <tr>
+              <td><span>Mobile Phone</span></td>
+              <td><input type="text" id="p1Phone" name="p1Phone" size="25" placeholder="P1 Phone" value="9169348450" /></td>
+            </tr>
+            <tr>
+              <td><span>Password</span></td>
+              <td><input type="text" id="p1Password" name="p1Password" size="25" placeholder="P1 Password" value="Password123!" /></td>
+            </tr>
+            <tr>
+              <td><span>Remote Type</span></td>
+              <td>
+                <select id="p1RemoteType" name="p1RemoteType">
+                  <option value="Email">Email</option>
+                  <option value="Phone">Phone</option>
+                  <option value="Password">Password</option>
+                  <option value="KBA">KBA</option>
+                </select>
+              </td>
+            </tr>
+          </table>
+          
           <br />
-          <input type="text" id="p1Email" name="p1Email" size="25" placeholder="P1 Email" value="FolsomOffice916@gmail.com" />
-          <br />
-          <input type="text" id="p1Phone" name="p1Phone" size="25" placeholder="P1 Phone" value="9169348450" />
-          <br />
-          <input type="text" id="p1Password" name="p1Password" size="25" placeholder="P1 Password" value="Password123!" />
-          <br />
-          <select id="p1RemoteType" name="p1RemoteType">
-            <option value="Email">Email</option>
-            <option value="Phone">Phone</option>
-            <option value="Password">Password</option>
-            <option value="KBA">KBA</option>
+
+          <span>Do you want a second Party?</span>
+          <select id="p2Exist" name="p2Exists" onchange="ShowHideP2()">
+            <option value="yes">Yes</option>
+            <option value="no" selected>No</option>
           </select>
           <br /><br />
+          <div id="p2" style="display: none">
 
-          <select id="p2Exist" name="p2Exists">
-            <option value="yes">SendP2</option>
-            <option value="no" selected>HideP2</option>
-          </select>
-          <br />
-          <input type="text" id="p2Name" name="p2Name" size="25" placeholder="P2 Name" value="Jane Doe" />
-          <br />
-          <input type="text" id="p2Email" name="p2Email" size="25" placeholder="P2 Email" value="sbadoc.test@gmail.com" />
-          <br />
-          <input type="text" id="p2Phone" name="p2Phone" size="25" placeholder="P2 Phone" value="9169348450" />
-          <br />
-          <input type="text" id="p2Password" name="p2Password" size="25" placeholder="P2 Password" value="Password123!" />
-          <br />
-          <select id="p2RemoteType" name="p2RemoteType">
-            <option value="Email">Email</option>
-            <option value="Phone">Phone</option>
-            <option value="Password">Password</option>
-            <option value="KBA">KBA</option>
-          </select>
+            <table border="1">
+              <tr>
+                <td><span>Full Name</span></td>
+                <td><input type="text" id="p2Name" name="p2Name" size="25" placeholder="P2 Name" value="Jane Doe" /></td>
+              </tr>
+              <tr>
+                <td><span>Email</span></td>
+                <td><input type="text" id="p2Email" name="p2Email" size="25" placeholder="P2 Email" value="sbadoc.test@gmail.com" /></td>
+              </tr>
+              <tr>
+                <td><span>Mobile Phone</span></td>
+                <td><input type="text" id="p2Phone" name="p2Phone" size="25" placeholder="P2 Phone" value="9169348450" /></td>
+              </tr>
+              <tr>
+                <td><span>Password</span></td>
+                <td><input type="text" id="p2Password" name="p2Password" size="25" placeholder="P2 Password" value="Password123!" /></td>
+              </tr>
+              <tr>
+                <td><span>Remote Type</span></td>
+                <td>
+                  <select id="p2RemoteType" name="p2RemoteType">
+                    <option value="Email">Email</option>
+                    <option value="Phone">Phone</option>
+                    <option value="Password">Password</option>
+                    <option value="KBA">KBA</option>
+                  </select>
+                </td>
+              </tr>
+            </table>
+            
+            <br />
+            <span>If Remote, sign at same time or one after another?</span>
+            <select id="signingType" name="signingType">
+              <option value="1">Same Time</option>
+              <option value="2">Sequential</option>
+            </select>
+          </div>
           <br />
 
           <br />
@@ -104,6 +148,14 @@
   function loadingoff() {
     document.getElementById("overlay").style.display = "none";
   }
+</script>
+
+<script type="text/javascript">
+    function ShowHideP2() {
+        var p2Exist = document.getElementById("p2Exist");
+        var p2 = document.getElementById("p2");
+        p2.style.display = p2Exist.value == "yes" ? "block" : "none";
+    }
 </script>
 
   </body>
