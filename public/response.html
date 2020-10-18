@@ -33,7 +33,7 @@
           <table border="1">
             <tr>
               <td><span>RequestType</span></td>
-              <td><input type="text" id="reqtype" name="reqtype" size="25" value="" /></td>
+              <td><input type="text" id="reqtype" name="reqtype" size="25" value="" disabled/></td>
             </tr>
             <tr>
               <td><span>AccessToken</span></td>
@@ -52,7 +52,7 @@
             formaction="/getremotesession">
             Get Remote Session
           </button>
-
+        
           <button
             class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary"
             id="myBtn2" 
@@ -68,7 +68,8 @@
           </button>
 
         </form>
-
+<br /><br />
+<span>The Session buttons merely return raw JSON. A good Chrome plugin to better view is <a href="https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc?hl=en" target="_blank">JSONView</a>
       </div>
     </div>
   </main>
@@ -76,7 +77,6 @@
 
 
 <script>
-
   const queryString = window.location.search;
   console.log(queryString);
   const urlParams = new URLSearchParams(queryString);
@@ -90,29 +90,12 @@
   document.getElementById('acctok').value = acctok;
   document.getElementById('sessid').value = sessid;
 
-  /*
-  // Get Request Parameters...
-  function getParams() {
-    var params = {},
-        pairs = document.URL.split('?')
-               .pop()
-               .split('&');
-    for (var i = 0, p; i < pairs.length; i++) {
-           p = pairs[i].split('=');
-           params[ p[0] ] =  p[1];
-    }     
-    return params;
-  }  
-  params = getParams();
-  for( var i in params ){
-    console.log( i , params[i] );
-    if (i != null) 
-      if (i == 'reqtype' || i == 'acctok' || i == 'sessid') {
-        // document.getElementById(i).innerHTML = params[i];
-        document.getElementById(i).value = params[i];
-      }
+  //hide remote button
+  var requesttype = document.getElementById("reqtype");
+  var remoteBtnDiv = document.getElementById("remoteBtnDiv");
+  if (requesttype.value == "direct") {
+    document.getElementById("myBtn").disabled = true;
   }
-  */
 </script>
 
   </body>
