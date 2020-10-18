@@ -68,6 +68,7 @@ app.listen(process.env.PORT || 3000, function() {
 app.get("/", function(req, res) {
   res.sendFile('public/index.html'); // no need to specify dir off root
 });
+
 app.get("/response", function(req, res) {
   res.sendFile('public/response.html');
 });
@@ -82,9 +83,15 @@ app.post("/sendimm", function(req, res) {
     function(error) { res.send(error); }
   );
 });
-app.post("/test", function(req, res) {
-  res.send('testing...' + JSON.stringify(req.body));
+
+app.post("/getremotesession", function(req, res) {
+  console.log('\n\n /GetRemoteSession has been hit...');
+  getRemoteSession(req.body).then(
+    function(result) { res.send(result); },
+    function(error) { res.send(error); }
+  );
 });
+
 app.post("/getsession", function(req, res) {
   console.log('\n\n /GetSession has been hit...');
   getSession(req.body).then(
@@ -92,33 +99,43 @@ app.post("/getsession", function(req, res) {
     function(error) { res.send(error); }
   );
 });
-app.post("/getsessionstatus", function(req, res) {
-  res.send('testing...' + JSON.stringify(req.body));
-});
+
 app.post("/getdocreport", function(req, res) {
-  res.send('testing...' + JSON.stringify(req.body));
+  console.log('\n\n /GetDocReport has been hit...');
+  getDocReport(req.body).then(
+    function(result) { res.redirect(result); },
+    function(error) { res.send(error); }
+  );
 });
 
-async function getSession(data) {
-  console.log('\n\n' + 'Data = ' + JSON.stringify(data));
-  // sessheader["access-token"] = data.acctok;
+// **************************************
+// * Functions
+// **************************************
+
+async function getRemoteSession(data) {
   let url = 'https://integrations.immesign.com/v2019.2/TeAASP/eSignapi/v1/remote/' + data.sessid + '/status';
   console.log('\n\nurl = ' + url);
-  
-  // const response = await axios.get(url, { headers: sessheader});
-  const response = await axios.get(url, {
-  headers: {
-    'access-token': data.acctok
-  }
-  });
-
-  console.log('\n\n Response = ' + response);
-  return response;
+  resp = await axios.get(url, {headers: {'access-token': data.acctok}});
+  console.log('\n\n getRemoteSession() response = ' + JSON.stringify(resp.data));
+  return (JSON.stringify(resp.data));
 }
 
-// **************************************
-// * sendIMM()
-// **************************************
+async function getSession(data) {
+  let url = 'https://integrations.immesign.com/v2019.2/TeAASP/eSignapi/v1/session/' + data.sessid;
+  console.log('\n\n url = ' + url);
+  resp = await axios.get(url, {headers: {'access-token': data.acctok}});
+  console.log('\n\n getSession() response = ' + JSON.stringify(resp.data));
+  return (JSON.stringify(resp.data));
+}
+
+async function getDocReport(data) {
+  let url = 'https://integrations.immesign.com/v2019.2/TeAASP/eSignapi/v1/url?pageKey=RemoteSigningReport&hostSessionId=' + data.sessid;
+  console.log('\n\n url = ' + url);
+  resp = await axios.get(url, {headers: {'access-token': data.acctok}});
+  console.log('\n\n getDocReport() response = ' + JSON.stringify(resp.data));
+  return resp.data.Url;
+}
+
 async function sendIMM(receivedData) {
   writelog('logs/' + now + '_1_receivedData', 'Received from UI' + '\n\n' + JSON.stringify(receivedData));
   

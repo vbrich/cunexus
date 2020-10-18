@@ -27,7 +27,7 @@
 
         <br /><br />
         <a href="https://HTML2IMM.sbatester.repl.co">Start Over</a><br />
-        <a href="https://integrations.immesign.com/v2019.2/TeAASP" target="_blank">Visit IMM Site</a><br />
+        <a href="https://integrations.immesign.com/v2019.2/TeAASP" target="_blank">Visit IMM Site</a><br /><br />
 
         <form method="POST">
           <table border="1">
@@ -49,9 +49,24 @@
           <button
             class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary"
             id="myBtn" 
+            formaction="/getremotesession">
+            Get Remote Session
+          </button>
+
+          <button
+            class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary"
+            id="myBtn2" 
             formaction="/getsession">
             Get Session
           </button>
+
+          <button
+            class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--primary"
+            id="myBtn3" 
+            formaction="/getdocreport">
+            Document Report
+          </button>
+
         </form>
 
       </div>
@@ -61,6 +76,21 @@
 
 
 <script>
+
+  const queryString = window.location.search;
+  console.log(queryString);
+  const urlParams = new URLSearchParams(queryString);
+  const reqtype = urlParams.get('reqtype')
+  console.log(reqtype);
+  const acctok = urlParams.get('acctok')
+  console.log(acctok);
+  const sessid = urlParams.get('sessid')
+  console.log(sessid);
+  document.getElementById('reqtype').value = reqtype;
+  document.getElementById('acctok').value = acctok;
+  document.getElementById('sessid').value = sessid;
+
+  /*
   // Get Request Parameters...
   function getParams() {
     var params = {},
@@ -72,7 +102,7 @@
            params[ p[0] ] =  p[1];
     }     
     return params;
-  }
+  }  
   params = getParams();
   for( var i in params ){
     console.log( i , params[i] );
@@ -82,6 +112,7 @@
         document.getElementById(i).value = params[i];
       }
   }
+  */
 </script>
 
   </body>
