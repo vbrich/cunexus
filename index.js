@@ -85,10 +85,9 @@ async function getDocs(receivedData) {
   rtbody.configuration.id = 'DefaultConfigId-noswitching';
   rtbody.transactionData[0] = base64payload;
   let rtResponse = await axios.post(rturl, rtbody, { headers: rtheaders});
-  //console.log(rtResponse);
   let sessionId = rtResponse.data.session.id;
-  console.log("2 - Runtime PaymentCalc SessionId = " + sessionId);
   writelog('logs/' + now + '_2_PayCalcStartSessionURL', rtResponse.data.url);
+  console.log("2 - Runtime PaymentCalc SessionId = " + sessionId);
   console.log('CalcRuntime dataCollectionRequired = ' + rtResponse.data.runtimeDataCollectionStatus.dataCollectionRequired);
   console.log('CalcRuntime transactionDataComplete = ' + rtResponse.data.runtimeDataCollectionStatus.reasons.transactionDataComplete);
   console.log();
@@ -100,9 +99,8 @@ async function getDocs(receivedData) {
   sessbody.fullTransactionData = 'false';
   let sessResponse = await axios.post(sessurl, sessbody, { headers: rtheaders});
   let deltatxl = sessResponse.data.transactionData;
-  // console.log('session body = ' + JSON.stringify(sessbody));
-  console.log("3 - Delta Txl received from PaymentCalc");
   writelog('logs/' + now + '_3_PayCalcTXLDecoded', base64decode(deltatxl));
+  console.log("3 - Delta Txl received from PaymentCalc");
   console.log('CalcSession dataCollectionRequired = ' + sessResponse.data.runtimeDataCollectionStatus.dataCollectionRequired);
   console.log('CalcSession transactionDataComplete = ' + sessResponse.data.runtimeDataCollectionStatus.reasons.transactionDataComplete);
   console.log();
@@ -110,13 +108,12 @@ async function getDocs(receivedData) {
 
   // 4 - CALL RUNTIME LENDING   
   rtbody.configuration.id = 'DefaultConfigId';
-  rtbody.transactionData[0] = ''; 
   rtbody.transactionData[0] = deltatxl;
   rtbody.transactionData[1] = base64payload; // received earlier (original payload)
   let rtlendResponse = await axios.post(rtlendurl, rtbody, { headers: rtheaders});
   let lendsessionId = rtlendResponse.data.session.id;
-  console.log("4 - Runtime Lending SessionId = " + lendsessionId);
   writelog('logs/' + now + '_4_LendingStartSessionURL', rtlendResponse.data.url);
+  console.log("4 - Runtime Lending SessionId = " + lendsessionId);
   console.log('LendRuntime dataCollectionRequired = ' + rtResponse.data.runtimeDataCollectionStatus.dataCollectionRequired);
   console.log('LendRuntime transactionDataComplete = ' + rtResponse.data.runtimeDataCollectionStatus.reasons.transactionDataComplete);
   console.log();
@@ -128,9 +125,8 @@ async function getDocs(receivedData) {
   sessbody.fullTransactionData = 'true';
   let sessResponseLend = await axios.post(sessurl, sessbody, { headers: rtheaders});
   let fulltxl = sessResponseLend.data.transactionData;
-  // console.log('session body = ' + JSON.stringify(sessbody));
-  console.log("5 - Full Txl received from Lending");
   writelog('logs/' + now + '_5_LendingSessionTXLDecoded', base64decode(fulltxl));
+  console.log("5 - Full Txl received from Lending");
   console.log('LendSession dataCollectionRequired = ' + sessResponseLend.data.runtimeDataCollectionStatus.dataCollectionRequired);
   console.log('LendSession transactionDataComplete = ' + sessResponseLend.data.runtimeDataCollectionStatus.reasons.transactionDataComplete);
   console.log();
