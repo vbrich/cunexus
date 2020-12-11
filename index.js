@@ -22,7 +22,7 @@ const sessbody = require('./json/sessbody.json');
 const dclbody = require('./json/dclbody.json');
 
 let ispayloadjson = true;
-var now = new Date().getUTCMilliseconds();
+let now = new Date().getUTCMilliseconds();
 
 // Update our JSON files from .env properties
 rtbody.client.licenseKey = licensekey;
