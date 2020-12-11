@@ -26,17 +26,17 @@
       <div id="main" width="90%">
         <form method="POST">
        
-          <span>Do you want send direct to the IMM site (banker) or remote to the Party (customers)?</span>
+          <span>Send to the Banker (requires IMM credentials) or Remote signing to the Customer(s)?</span>
           <select id="requestType" name="requestType">
-            <option value="direct" selected>Direct</option>
-            <option value="remote">Remote</option>
+            <option value="direct">Banker</option>
+            <option value="remote" selected>Remote</option>
           </select>
           <br /><br />
 
           <span>Do you want to send a PDF with signatures or without?</span>
           <select id="docType" name="docType">
-            <option value="signature">Signature</option>
-            <option value="nosignature" selected>No Signature</option>
+            <option value="signature">With Signature</option>
+            <option value="nosignature" selected>Without Signature</option>
           </select>
           <br /><br />
 
@@ -167,6 +167,16 @@
         var p2 = document.getElementById("p2");
         p2.style.display = p2Exist.value == "yes" ? "block" : "none";
     }
+</script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0XTYRVRS58"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-0XTYRVRS58');
 </script>
 
   </body>

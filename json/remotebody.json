@@ -17,6 +17,6 @@
       "Subject": "Document Set for Testing",
       "Message": "Please accept or sign the documents."
     },
-    "RedirectURL": "https://www.google.com",
-    "RedirectDelay": 10
+    "RedirectURL": "https://survey.survicate.com/672b0905c26320ee/",
+    "RedirectDelay": 4
   }
