@@ -135,7 +135,9 @@ async function getDocs(receivedData) {
   // 6 - CALL DCL EXECUTE JOB TICKET
   dclbody.jobTicket.DataValuesList[0].content = fulltxl;
   let dclResponse = await axios.post(dclurl, dclbody, { headers: rtheaders});
-  writelog('logs/' + now + '_6_DCLResponse', util.inspect(dclResponse)); // replace circular links since JSON.stringify had issues
+  // writelog('logs/' + now + '_6_DCLResponse', util.inspect(dclResponse)); // replace circular links since JSON.stringify had issues
+  writelog('logs/' + now + '_6_DCLResponse', JSON.stringify(dclResponse.data, null, 4));
+  
   let encodedPdf = dclResponse.data.Result.RenderedFiles[0].Content;
   console.log("6 - EncodedPDF");
   writelog('logs/' + now + '_7_pdf', encodedPdf);
