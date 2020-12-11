@@ -75,7 +75,7 @@ app.post("/getdocs", function(req, res) {
 
 // Asynchronous function to handle e2e workflow
 async function getDocs(receivedData) {
-  console.log('B - getDocs() hit...');
+  console.log('B - getDocs() hit...' + receivedData);
   
   // 1 - CALL TDT 
   let base64data;
@@ -141,12 +141,10 @@ async function getDocs(receivedData) {
   writelog('logs/' + now + '_6_pdf', encodedPdf);
 
   // 7 - CALL DCL AGAIN TO SEND DOCUMENTS TO IMM
-  /*
   immbody.jobTicket.DataValuesList[0].content = fulltxl;
   let immResponse = await axios.post(dclurl, immbody, { headers: rtheaders});
   let forwardingResults = JSON.stringify(immResponse.data.Result.ForwardingResults);
   console.log('Forwarding Results = ' + forwardingResults);
-  */
 
   // 8 - ClearSessions 
   clearbody.session.id = sessionId;  
