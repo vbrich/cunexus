@@ -29,7 +29,6 @@ rtbody.client.licenseKey = licensekey;
 rtbody.documentLibraryVersion = doclib;
 dclbody.jobTicket.DocumentLibraryVersion.DocumentLibraryVersion = doclib;
 dclbody.jobTicket.Prefs.LicenseKeyString = licensekey;
-rtbody.documentLibraryVersion = doclib;
 
 // Configure and Launch the Express Server
 app.use(bodyParser.json({limit: '15mb'})); 
@@ -50,24 +49,34 @@ app.post("/getdocs", function(req, res) {
   console.log('A - getdocs post hit...');
   purgeLogs();
   let receivedData;
-  if (isJson(req.body.payload))
+  
+  // reload variables from form 
+  rtbody.documentLibraryVersion = req.body.doclib;
+  dclbody.jobTicket.Prefs.LicenseKeyString = req.body.key;
+  dclbody.jobTicket.DocumentLibraryVersion.DocumentLibraryVersion = req.body.doclib;
+  dclbody.jobTicket.Prefs.LicenseKeyString = req.body.key;
+  
+  if (isJson(req.body.payload)) {
     receivedData = JSON.parse(req.body.payload);
-  else {
+  } else {
     receivedData = req.body.payload;
     ispayloadjson = false;
-  }
+  } 
   getDocs(receivedData).then(
     function(result) { res.send(result); },
     function(error) { res.send('Error occured. Have to look at REPL logs, but most likely payload related causing the touchless API flow to fail.'); console.log(error); }
   );
 });
 
-// Asynchronous function to handle e2e workflow
 async function getDocs(receivedData) {
-  
+  let calcRuntimeResponse = "TBD";
+  let calcSessionResponse = "TBD";
+  let lendingRuntimeResponse = "TBD";
+  let lendingSessionResponse = "TBD";
+
   // 1 - PARSE XML PAYLOAD IN
   let txl = receivedData;
-  writelog('logs/' + now + '_1_receive', receivedData);
+  writelog('logs/' + now + '_1_ReceivedData', receivedData);
 
   // 2 - CALL RUNTIME PAYMENT CALC
   let base64payload = base64encode(txl); 
@@ -76,7 +85,11 @@ async function getDocs(receivedData) {
   //console.log(rtResponse);
   let sessionId = rtResponse.data.session.id;
   console.log("2 - Runtime PaymentCalc SessionId = " + sessionId);
-  writelog('logs/' + now + '_2_calcsession', rtResponse.data.url);
+  writelog('logs/' + now + '_2_PayCalcStartSessionURL', rtResponse.data.url);
+  console.log('CalcRuntime dataCollectionRequired = ' + rtResponse.data.runtimeDataCollectionStatus.dataCollectionRequired);
+  console.log('CalcRuntime transactionDataComplete = ' + rtResponse.data.runtimeDataCollectionStatus.reasons.transactionDataComplete);
+  console.log();
+  calcRuntimeResponse = JSON.stringify(rtResponse.data.runtimeDataCollectionStatus);
 
   // 3 - CALL SESSION TO GET DELTA TXL
   sessbody.session.id = sessionId;
@@ -85,7 +98,11 @@ async function getDocs(receivedData) {
   let deltatxl = sessResponse.data.transactionData;
   // console.log('session body = ' + JSON.stringify(sessbody));
   console.log("3 - Delta Txl received from PaymentCalc");
-  writelog('logs/' + now + '_3_deltatxl', deltatxl);  
+  writelog('logs/' + now + '_3_PayCalcTXLDecoded', base64decode(deltatxl));
+  console.log('CalcSession dataCollectionRequired = ' + sessResponse.data.runtimeDataCollectionStatus.dataCollectionRequired);
+  console.log('CalcSession transactionDataComplete = ' + sessResponse.data.runtimeDataCollectionStatus.reasons.transactionDataComplete);
+  console.log();
+  calcSessionResponse = JSON.stringify(sessResponse.data.runtimeDataCollectionStatus);
 
   // 4 - CALL RUNTIME LENDING   
   rtbody.transactionData[0] = ''; 
@@ -94,7 +111,10 @@ async function getDocs(receivedData) {
   let rtlendResponse = await axios.post(rtlendurl, rtbody, { headers: rtheaders});
   let lendsessionId = rtlendResponse.data.session.id;
   console.log("4 - Runtime Lending SessionId = " + lendsessionId);
-  writelog('logs/' + now + '_4_lendingsession', rtlendResponse.data.url);
+  console.log('LendRuntime dataCollectionRequired = ' + rtResponse.data.runtimeDataCollectionStatus.dataCollectionRequired);
+  console.log('LendRuntime transactionDataComplete = ' + rtResponse.data.runtimeDataCollectionStatus.reasons.transactionDataComplete);
+  console.log();
+  lendingRuntimeResponse = JSON.stringify(rtResponse.data.runtimeDataCollectionStatus);
 
   // 5 - CALL SESSION TO GET FULL TXL
   sessbody.session.id = lendsessionId;
@@ -103,19 +123,28 @@ async function getDocs(receivedData) {
   let fulltxl = sessResponseLend.data.transactionData;
   // console.log('session body = ' + JSON.stringify(sessbody));
   console.log("5 - Full Txl received from Lending");
-  writelog('logs/' + now + '_5_fulltxldecoded', base64decode(fulltxl));
+  writelog('logs/' + now + '_5_LendingSessionTXLDecoded', base64decode(fulltxl));
+  console.log('LendSession dataCollectionRequired = ' + sessResponseLend.data.runtimeDataCollectionStatus.dataCollectionRequired);
+  console.log('LendSession transactionDataComplete = ' + sessResponseLend.data.runtimeDataCollectionStatus.reasons.transactionDataComplete);
+  console.log();
+  lendingSessionResponse = JSON.stringify(sessResponseLend.data.runtimeDataCollectionStatus);
 
   // 6 - CALL DCL EXECUTE JOB TICKET
   dclbody.jobTicket.DataValuesList[0].content = fulltxl;
   let dclResponse = await axios.post(dclurl, dclbody, { headers: rtheaders});
-  writelog('logs/' + now + '_6_dclresponse', util.inspect(dclResponse)); // replace circular links since JSON.stringify had issues
+  writelog('logs/' + now + '_6_DCLResponse', util.inspect(dclResponse)); // replace circular links since JSON.stringify had issues
   let encodedPdf = dclResponse.data.Result.RenderedFiles[0].Content;
-  console.log("6 - Encoded PDF returned");
+  console.log("6 - EncodedPDF");
   writelog('logs/' + now + '_7_pdf', encodedPdf);
 
   let backUrl = '<a href="https://hrtrid--sbatester.repl.co">Go Back</a>';
 
-  return('<html>' + backUrl + '<br><br><object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + '"' + '></object></html>');
+  return('<html>' + backUrl + '<br>' + 
+  '<br>' + '<b>PaymentCalculation Runtime Response = </b>' + calcRuntimeResponse + 
+  '<br>' + '<b>PaymentCalculation Session Response = </b>' + calcSessionResponse +
+  '<br>' + '<b>Lending Runtime Response = </b>' + lendingRuntimeResponse +
+  '<br>' + '<b>Lending Session Response = </b>' + lendingSessionResponse + '<br><br>' + 
+  '<object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + '"' + '></object></html>');
 }
 
 function isJson(str) {
@@ -147,6 +176,6 @@ function purgeLogs() {
         console.log("Successfully deleted " + logpath);
       }
     });
-    }
+  }
   dir.closeSync()
 }
