@@ -5,15 +5,15 @@ const axios = require('axios');
 const bodyParser = require("body-parser");
 const app = express();
 const { base64encode, base64decode } = require('nodejs-base64');
-var util = require('util')
+var util = require('util');
 
 // Read our .env properties (hidden unless you are REPL owner)
 const rturl = process.env.rturl;
 const rtlendurl =process.env.rtlendurl;
 const sessurl = process.env.sessurl;
 const dclurl = process.env.dclurl;
-const licensekey = process.env.licensekey;
-const doclib = process.env.doclib;
+// const licensekey = process.env.licensekey;
+// const doclib = process.env.doclib;
 
 // Bring in our JSON config files
 const rtheaders = require('./json/rtheaders.json');
@@ -25,13 +25,13 @@ let ispayloadjson = true;
 let now = new Date().getUTCMilliseconds();
 
 // Update our JSON files from .env properties
-rtbody.client.licenseKey = licensekey;
-rtbody.documentLibraryVersion = doclib;
-dclbody.jobTicket.DocumentLibraryVersion.DocumentLibraryVersion = doclib;
-dclbody.jobTicket.Prefs.LicenseKeyString = licensekey;
+// rtbody.client.licenseKey = licensekey;
+// rtbody.documentLibraryVersion = doclib;
+// dclbody.jobTicket.DocumentLibraryVersion.DocumentLibraryVersion = doclib;
+// dclbody.jobTicket.Prefs.LicenseKeyString = licensekey;
 
 // Configure and Launch the Express Server
-app.use(bodyParser.json({limit: '15mb'})); 
+// app.use(bodyParser.json({limit: '15mb'})); 
 app.use(bodyParser.text({ type: 'text/plain' }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 app.use(express.static('public')); // load files from public directory
@@ -46,13 +46,12 @@ app.get("/", function(req, res) {
 
 // Handle a /getdocs POST
 app.post("/getdocs", function(req, res) {
-  console.log('A - getdocs post hit...');
   purgeLogs();
   let receivedData;
   
-  // reload variables from form 
+  // load variables from form 
+  rtbody.client.licenseKey = req.body.key;
   rtbody.documentLibraryVersion = req.body.doclib;
-  dclbody.jobTicket.Prefs.LicenseKeyString = req.body.key;
   dclbody.jobTicket.DocumentLibraryVersion.DocumentLibraryVersion = req.body.doclib;
   dclbody.jobTicket.Prefs.LicenseKeyString = req.body.key;
   
@@ -78,6 +77,7 @@ async function getDocs(receivedData) {
 
   // 1 - PARSE XML PAYLOAD IN
   let txl = receivedData;
+  console.log("1 - Received our payload");
   writelog('logs/' + now + '_1_ReceivedData', receivedData);
 
   // 2 - CALL RUNTIME PAYMENT CALC
