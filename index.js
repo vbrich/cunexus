@@ -73,6 +73,8 @@ async function getDocs(receivedData) {
   let calcSessionResponse = "TBD";
   let lendingRuntimeResponse = "TBD";
   let lendingSessionResponse = "TBD";
+  let paycalcurl = "TBD";
+  let lendingurl = "TBD";
 
   // 1 - PARSE XML PAYLOAD IN
   let txl = receivedData;
@@ -80,6 +82,7 @@ async function getDocs(receivedData) {
 
   // 2 - CALL RUNTIME PAYMENT CALC
   let base64payload = base64encode(txl); 
+  rtbody.configuration.id = 'DefaultConfigId-noswitching';
   rtbody.transactionData[0] = base64payload;
   let rtResponse = await axios.post(rturl, rtbody, { headers: rtheaders});
   //console.log(rtResponse);
@@ -90,6 +93,7 @@ async function getDocs(receivedData) {
   console.log('CalcRuntime transactionDataComplete = ' + rtResponse.data.runtimeDataCollectionStatus.reasons.transactionDataComplete);
   console.log();
   calcRuntimeResponse = JSON.stringify(rtResponse.data.runtimeDataCollectionStatus);
+  paycalcurl = rtResponse.data.url;
 
   // 3 - CALL SESSION TO GET DELTA TXL
   sessbody.session.id = sessionId;
@@ -105,16 +109,19 @@ async function getDocs(receivedData) {
   calcSessionResponse = JSON.stringify(sessResponse.data.runtimeDataCollectionStatus);
 
   // 4 - CALL RUNTIME LENDING   
+  rtbody.configuration.id = 'DefaultConfigId';
   rtbody.transactionData[0] = ''; 
   rtbody.transactionData[0] = deltatxl;
   rtbody.transactionData[1] = base64payload; // received earlier (original payload)
   let rtlendResponse = await axios.post(rtlendurl, rtbody, { headers: rtheaders});
   let lendsessionId = rtlendResponse.data.session.id;
   console.log("4 - Runtime Lending SessionId = " + lendsessionId);
+  writelog('logs/' + now + '_4_LendingStartSessionURL', rtlendResponse.data.url);
   console.log('LendRuntime dataCollectionRequired = ' + rtResponse.data.runtimeDataCollectionStatus.dataCollectionRequired);
   console.log('LendRuntime transactionDataComplete = ' + rtResponse.data.runtimeDataCollectionStatus.reasons.transactionDataComplete);
   console.log();
   lendingRuntimeResponse = JSON.stringify(rtResponse.data.runtimeDataCollectionStatus);
+  lendingurl = rtlendResponse.data.url;
 
   // 5 - CALL SESSION TO GET FULL TXL
   sessbody.session.id = lendsessionId;
@@ -140,11 +147,15 @@ async function getDocs(receivedData) {
   let backUrl = '<a href="https://hrtrid--sbatester.repl.co">Go Back</a>';
 
   return('<html>' + backUrl + '<br>' + 
+  '<br>' + '<b>PayCalc URL = </b>' + '<a href="' + paycalcurl + '" target="_blank">' + paycalcurl + '</a>' + 
   '<br>' + '<b>PaymentCalculation Runtime Response = </b>' + calcRuntimeResponse + 
   '<br>' + '<b>PaymentCalculation Session Response = </b>' + calcSessionResponse +
+  '<br>' + 
+  '<br>' + '<b>Lending URL = </b>' + '<a href="' + lendingurl + '" target="_blank">' + lendingurl + '</a>' +
   '<br>' + '<b>Lending Runtime Response = </b>' + lendingRuntimeResponse +
   '<br>' + '<b>Lending Session Response = </b>' + lendingSessionResponse + '<br><br>' + 
-  '<object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + '"' + '></object></html>');
+  '<object style="width: 100%; height: 100%;" type="application/pdf" data="data:application/pdf;base64,' + encodedPdf + 
+  '"' + '></object></html>');
 }
 
 function isJson(str) {
